@@ -1,0 +1,4 @@
+# Ignore 'out' file or directory
+out/
+*.out
+out
