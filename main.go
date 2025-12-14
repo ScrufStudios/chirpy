@@ -4,10 +4,20 @@ import (
 	"net/http"
 )
 
+type HealthHandler struct{}
+
+func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Write([]byte("OK"))
+}
+
 func main() {
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir(".")))
-	mux.Handle("/assets", http.FileServer(http.Dir("./")))
+	healthHandler := HealthHandler{}
+	mux.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("."))))
+	mux.Handle("/app/assets", http.StripPrefix("/app/", http.FileServer(http.Dir("./"))))
+	mux.HandleFunc("/healthz", healthHandler.ServeHTTP)
 	s := http.Server{
 		Addr:    ":8080",
 		Handler: mux,
