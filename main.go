@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
 func main() {
-	sm := http.NewServeMux()
+	mux := http.NewServeMux()
+	mux.Handle("/", http.FileServer(http.Dir(".")))
+	mux.Handle("/assets", http.FileServer(http.Dir("./")))
 	s := http.Server{
 		Addr:    ":8080",
-		Handler: sm,
+		Handler: mux,
 	}
 	s.ListenAndServe()
-	fmt.Println("Hello, chirpy")
 }
